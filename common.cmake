@@ -2,18 +2,18 @@ include_guard(GLOBAL)
 cmake_minimum_version(VERSION 3.16)
 
 # stricter wrapper of cmake_parse_arguments
-macro(fun_parse_arguments _fun_parse_arg_num _fun_parse_prefix _fun_parse_flags _fun_parse_one_value _fun_parse_multi_value _fun_parse_required)
+macro(fun_parse_arguments arg_num prefix flags one_value multi_value required)
 
-    cmake_parse_arguments(PARSE_ARGV ${_fun_parse_arg_num} ${_fun_parse_prefix} 
-        "${_fun_parse_flags}" "${_fun_parse_one_value}" "${_fun_parse_multi_value}")
+    cmake_parse_arguments(PARSE_ARGV ${arg_num} ${prefix} 
+        "${flags}" "${one_value}" "${multi_value}")
 
-    if (DEFINED ${_fun_parse_prefix}_UNPARSED_ARGUMENTS)
+    if (DEFINED ${prefix}_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "unparsed arguments in function call")
     endif()
 
-    foreach(required IN LISTS _fun_parse_required)
-        if (NOT DEFINED ${_fun_parse_prefix}_)
-            message(FATAL_ERROR "required argument is not defined: ${required}")
+    foreach(req IN LISTS required)
+        if (NOT DEFINED ${prefix}_)
+            message(FATAL_ERROR "required argument is not defined: ${req}")
         endif()
     endforeach()
 endmacro()
