@@ -77,14 +77,24 @@ function(fun_bootstrap_vcpkg)
         set(vcpkg_bootstrap_cmd "${VCPKG_ROOT}/bootstrap-vcpkg.sh")
     endif()
 
+    find_package(Git REQUIRED)
+
     if(NOT EXISTS "${vcpkg_bootstrap_cmd}")
-        find_package(Git)
         execute_process(COMMAND "${GIT_EXECUTABLE}" clone --filter=tree:0 ${version_tag_opt}
             "https://github.com/microsoft/vcpkg.git" "${VCPKG_ROOT}")
 
         if(NOT EXISTS "${vcpkg_bootstrap_cmd}")
             message(FATAL_ERROR "failed to clone vcpkg")
         endif()
+    elseif(DEFINED _arg_VERSION_TAG)
+        execute_process(
+            COMMAND "${GIT_EXECUTABLE}" checkout "${_arg_VERSION_TAG}"
+            WORKING_DIRECTORY "${VCPKG_ROOT}")
+    elseif(_arg_VERSION_TAG STREQUAL "master")
+        execute_process(
+            COMMAND "${GIT_EXECUTABLE}" checkout master
+            COMMAND "${GIT_EXECUTABLE}" pull
+            WORKING_DIRECTORY "${VCPKG_ROOT}")
     endif()
 
     if(NOT EXISTS "${vcpkg_cmd}")
@@ -103,7 +113,7 @@ endfunction()
 
 # guess a vcpkg triplet for this platform
 function(fun_guess_vcpkg_triplet out_triplet)
-    if (NOT DEFINED BUILD_SHARED_LIBS OR "x${BUILD_SHARED_LIBS}x" STREQUAL "xx")
+    if(NOT DEFINED BUILD_SHARED_LIBS OR "x${BUILD_SHARED_LIBS}x" STREQUAL "xx")
         message(FATAL_ERROR "BUILD_SHARED_LIBS must be set")
     endif()
 
