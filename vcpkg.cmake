@@ -9,18 +9,47 @@ include("${CMAKE_CURRENT_LIST_DIR}/common.cmake")
 # recommended to add /vcpkg to .gitignore
 # set VCPKG_ROOT or ENV{VCPKG_ROOT} to use an alternate vcpkg install location
 function(fun_bootstrap_vcpkg)
-    fun_parse_arguments(0 _arg "NO_SYSTEM" "VERSION_TAG" "" "")
-
-    if(DEFINED _arg_VERSION_TAG)
-        set(version_tag_opt "--branch ${_arg_VERSION_TAG}")
-    else()
-        set(version_tag_opt "")
-    endif()
+    fun_parse_arguments(0 _arg
+        "NO_SYSTEM;CLEAN_BUILD;CLEAN_DOWNLOADS"
+        "VERSION_TAG;TRIPLET"
+        "OVERLAY_PORTS;OVERLAY_TRIPLETS"
+        "TRIPLET")
 
     # custom toolchain and first run
     if(DEFINED CMAKE_TOOLCHAIN_FILE AND NOT DEFINED VCPKG_ROOT)
         message(STATUS "using custom toolchain, include vcpkg to build dependencies.")
         return()
+    endif()
+
+    set(VCPKG_TARGET_TRIPLET "${_arg_TRIPLET}" CACHE STRING "")
+
+    set(install_options "--clean-packages-after-build")
+
+    if(DEFINED _arg_VERSION_TAG)
+        set(version_tag_opt "--branch ${_arg_VERSION_TAG}")
+
+        # if checking out specific commit, then stability is important
+        list(APPEND install_options "--x-abi-tools-use-exact-versions")
+    else()
+        set(version_tag_opt "")
+    endif()
+
+    if(_arg_CLEAN_DOWNLOADS)
+        list(APPEND install_options "--clean-downloads-after-build")
+    endif()
+
+    if(_arg_CLEAN_BUILD)
+        list(APPEND install_options "--clean-buildtrees-after-build")
+    endif()
+
+    set(VCPKG_INSTALL_OPTIONS ${install_options} CACHE STRING "")
+
+    if(DEFINED _arg_OVERLAY_PORTS)
+        set(VCPKG_OVERLAY_PORTS ${_arg_OVERLAY_PORTS} CACHE STRING "")
+    endif()
+
+    if(DEFINED _arg_OVERLAY_TRIPLETS)
+        set(VCPKG_OVERLAY_TRIPLETS ${_arg_OVERLAY_TRIPLETS} CACHE STRING "")
     endif()
 
     if(DEFINED ENV{VCPKG_ROOT} AND NOT _arg_NO_SYSTEM)
