@@ -1,4 +1,5 @@
 include_guard(GLOBAL)
+cmake_minimum_version(VERSION 3.16)
 
 # stricter wrapper of cmake_parse_arguments
 macro(fun_parse_arguments _fun_parse_arg_num _fun_parse_prefix _fun_parse_flags _fun_parse_one_value _fun_parse_multi_value _fun_parse_required)

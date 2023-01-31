@@ -1,4 +1,5 @@
 include_guard(GLOBAL)
+cmake_minimum_version(VERSION 3.16)
 
 # adds platform compiler definitions to target
 # os one of: <prefix>_OS_WINDOWS, _MACOS, _LINUX, _UNKNOWN
