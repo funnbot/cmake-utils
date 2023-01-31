@@ -103,6 +103,10 @@ endfunction()
 
 # guess a vcpkg triplet for this platform
 function(fun_guess_vcpkg_triplet out_triplet)
+    if (NOT DEFINED BUILD_SHARED_LIBS OR "x${BUILD_SHARED_LIBS}x" STREQUAL "xx")
+        message(FATAL_ERROR "BUILD_SHARED_LIBS must be set")
+    endif()
+
     set(target_arch "x64")
 
     if(WIN32)
