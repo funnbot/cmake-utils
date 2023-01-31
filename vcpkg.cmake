@@ -42,7 +42,8 @@ function(fun_bootstrap_vcpkg)
 
     if(NOT EXISTS "${vcpkg_bootstrap_cmd}")
         find_package(Git)
-        execute_process(COMMAND "${GIT_EXECUTABLE}" clone --filter=tree:0 "https://github.com/microsoft/vcpkg.git" "${VCPKG_ROOT}")
+        execute_process(COMMAND "${GIT_EXECUTABLE}" clone --filter=tree:0 ${version_tag_opt}
+            "https://github.com/microsoft/vcpkg.git" "${VCPKG_ROOT}")
 
         if(NOT EXISTS "${vcpkg_bootstrap_cmd}")
             message(FATAL_ERROR "failed to clone vcpkg")
