@@ -9,7 +9,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/common.cmake")
 # recommended to add /vcpkg to .gitignore
 # set VCPKG_ROOT or ENV{VCPKG_ROOT} to use an alternate vcpkg install location
 function(fun_bootstrap_vcpkg)
-    cmake_parse_arguments(PARSE_ARGV 0 _arg "NO_SYSTEM" "VERSION_TAG" "")
+    fun_parse_arguments(0 _arg "NO_SYSTEM" "VERSION_TAG" "" "")
 
     if(DEFINED _arg_VERSION_TAG)
         set(version_tag_opt "--branch ${_arg_VERSION_TAG}")
