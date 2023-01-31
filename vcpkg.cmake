@@ -15,6 +15,14 @@ function(fun_bootstrap_vcpkg)
         "OVERLAY_PORTS;OVERLAY_TRIPLETS"
         "TRIPLET")
 
+    if(DEFINED CMAKE_PROJECT_NAME)
+        if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+            message(FATAL_ERROR "fun_boostrap_vcpkg() must be called before project()")
+        else()
+            message(WARNING "fun_boostrap_vcpkg() may not work with add_subdirectory()")
+        endif()
+    endif()
+
     # custom toolchain and first run
     if(DEFINED CMAKE_TOOLCHAIN_FILE AND NOT DEFINED VCPKG_ROOT)
         message(STATUS "using custom toolchain, include vcpkg to build dependencies.")
