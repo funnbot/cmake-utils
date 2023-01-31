@@ -16,7 +16,7 @@ function(fun_bootstrap_vcpkg)
         "TRIPLET")
 
     if(DEFINED CMAKE_PROJECT_NAME)
-        if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+        if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
             message(FATAL_ERROR "fun_boostrap_vcpkg() must be called before project()")
         else()
             message(WARNING "fun_boostrap_vcpkg() may not work with add_subdirectory()")
@@ -124,4 +124,38 @@ function(fun_guess_vcpkg_triplet out_triplet)
     endif()
 
     set(${out_triplet} "${triplet}" PARENT_SCOPE)
+endfunction()
+
+function(fun_clean_vcpkg_buildtrees_keep_sources)
+    if(NOT DEFINED CMAKE_PROJECT_NAME)
+        message(FATAL_ERROR "must be called after project()")
+    endif()
+
+    if(NOT DEFINED VCPKG_ROOT)
+        message(FATAL_ERROR "fun_boostrap_vcpkg should have been called already")
+    endif()
+
+    get_filename_component(vcpkg_dir "${VCPKG_ROOT}"
+        ABSOLUTE BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+
+    if(NOT IS_DIRECTORY "${vcpkg_dir}")
+        message(FATAL_ERROR "can't find vcpkg root")
+    endif()
+
+    file(GLOB all_packages LIST_DIRECTORIES true "${vcpkg_dir}/buildtrees/*")
+
+    foreach(package IN LISTS all_packages)
+        file(GLOB subdirs LIST_DIRECTORIES true "${package}/*")
+
+        foreach(dir IN LISTS subdirs)
+            if(IS_DIRECTORY "${dir}")
+                get_filename_component(dir_name "${dir}" NAME)
+
+                if(NOT(dir_name STREQUAL "src"))
+                    message(STATUS "removing '${dir}'")
+                    file(REMOVE_RECURSE "${dir}")
+                endif()
+            endif()
+        endforeach()
+    endforeach()
 endfunction()
