@@ -159,17 +159,27 @@ function(fun_clean_vcpkg_buildtrees_keep_sources)
     file(GLOB all_packages LIST_DIRECTORIES true "${vcpkg_dir}/buildtrees/*")
 
     foreach(package IN LISTS all_packages)
+        if(NOT IS_DIRECTORY package)
+            continue()
+        endif()
+
+        if(NOT(package MATCHES "-((dbg)|(rel))$"))
+            continue()
+        endif()
+
         file(GLOB subdirs LIST_DIRECTORIES true "${package}/*")
 
         foreach(dir IN LISTS subdirs)
-            if(IS_DIRECTORY "${dir}")
-                get_filename_component(dir_name "${dir}" NAME)
-
-                if(NOT(dir_name STREQUAL "src"))
-                    message(STATUS "removing '${dir}'")
-                    file(REMOVE_RECURSE "${dir}")
-                endif()
+            if(NOT IS_DIRECTORY dir)
+                continue()
             endif()
+
+            if(NOT(dir MATCHES "/src$"))
+                continue()
+            endif()
+
+            message(STATUS "removing '${dir}'")
+            file(REMOVE_RECURSE "${dir}")
         endforeach()
     endforeach()
 endfunction()
