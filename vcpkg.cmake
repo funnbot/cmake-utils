@@ -15,7 +15,7 @@ function(fun_bootstrap_vcpkg)
         "OVERLAY_PORTS;OVERLAY_TRIPLETS"
         "TRIPLET")
 
-    if(DEFINED CMAKE_PROJECT_NAME)
+    if(DEFINED CMAKE_PROJECT_NAME AND NOT DEFINED VCPKG_ROOT)
         if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
             message(FATAL_ERROR "fun_boostrap_vcpkg() must be called before project()")
         else()
